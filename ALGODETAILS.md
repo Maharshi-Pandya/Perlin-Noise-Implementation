@@ -82,8 +82,4 @@ x2 = lerp(d3, d4, u)
 avg = lerp(x1, x2, v)
 ```
 
-The "fade" function will be applied to `u` and `v` as this makes changes more gradual as one approaches integral co-ords.
-
-
-
 Logically, thats all we want.
