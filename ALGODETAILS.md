@@ -2,17 +2,17 @@
 
 <hr>
 
-- Important thing to note here is that, if a noise function `PerlinNoise`  exists for 2 dimensions such that
+- Important thing to note here is that, if a noise function `PerlinNoise`  exists for 3 dimensions such that
 
   ```python
-  PerlinNoise(x, y)
+  PerlinNoise(x, y, z)
   ```
 
   then, 
 
   ```python
-  # the noise val for point x=3, y=0 in 2-d
-  noise_val = PerlinNoise(3, 0)
+  # the noise val for point x=3, y=0, z=0 in 3-d
+  noise_val = PerlinNoise(3, 0, 0)
   # the noise val for point x=3 in 1-d
   noise_val2 = PerlinNoise(3)
   
@@ -24,13 +24,14 @@
 ### Generation Logic
 
 <hr>
-Perlin Noise (for 2-D and 1-D) can be generated using vector operations on a 2-D grid.
+Perlin Noise (for 3-D, 2-D and 1-D) can be generated using vector operations effectively.
 
-Firstly to find the Perlin Noise value for a co-ordinate in space, we locate the co-ordinate inside of a unit square.
+
+Firstly to find the Perlin Noise value for a co-ordinate in space, we locate the co-ordinate inside of a unit cell (square in 2-D and cube in 3-D).
 
 >For eg.
 >
->if the co-ordinate is (x, y) we calculate its location inside a unit square by (x, y) % 1.0
+>if the co-ordinates are (x, y, z) we calculate its location inside a unit cell by (x, y, z) % 1.0
 
 <img src="./assets/logic01.gif" alt="unit_square" />
 
@@ -46,7 +47,7 @@ Example gradient vectors.
 
 >Note
 >
->In Ken Perlin's Improved algorithm, the gradient vectors are not completely random. Instead, they are chosen from vectors, that point from the unit square co-ordinate to the center of the unit square.
+>In Ken Perlin's Improved algorithm, the gradient vectors are not completely random. Instead, they are chosen from vectors, that point from the unit cell co-ordinate to the center of the unit cell.
 >
 >i.e. A random vector is chosen from 
 >
@@ -60,13 +61,14 @@ Example gradient vectors.
 >
 >In this implementation, will be doing the same.
 
-Next, we calculate the distance vectors from the unit square point to our input point as shown below.
+Next, we calculate the distance vectors from the unit cell point to our input point as shown below.
 
 <img src="./assets/logic03.gif">
 
 We, then need to compute the dot product between the distance vector and the gradient vector to get values at the four corners and linearly interpolating between them using the "faded" co-ordinate values of our input point, thus getting an average value for our input point.
 
 ```python
+# Eg. in 2-D
 # Below are the 4 values from the dot product
 # d1 | d2
 # --------
