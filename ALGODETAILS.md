@@ -64,7 +64,7 @@ Next, we calculate the distance vectors from the unit square point to our input 
 
 <img src="./assets/logic03.gif">
 
-We, then need to compute the dot product between the distance vector and the gradient vector to get values at the four corners so we can "fade" the resulting values thus getting a smoothed out curve.
+We, then need to compute the dot product between the distance vector and the gradient vector to get values at the four corners and linearly interpolating between them using the "faded" co-ordinate values of our input point, thus getting an average value for our input point.
 
 ```python
 # Below are the 4 values from the dot product
