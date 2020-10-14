@@ -7,6 +7,8 @@
 # but it must contain 0-255 inclusive random numbers which are uniformly distributed throughout the 
 # table. Rn, will be hard-coding it.
 # This permutation table is the one which Ken Perlin used.
+import random
+
 PERM_TABLE: list[int] = [151,160,137,91,90,15,
     131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
     190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
@@ -30,7 +32,7 @@ class PerlinNoise:
     """
     The class for generation of Perlin Noise
     """
-    def __init__(self, inp_x, inp_y=0, inp_z=0, rep_amt=255):
+    def __init__(self, inp_x, inp_y=0, inp_z=0, rep_amt=-1):
         # by default y and z components will be 0.
         # by default the inp_vals will "wrap-around" if repeat > 0
         self.rep_amt = rep_amt
@@ -50,18 +52,23 @@ class PerlinNoise:
         # Perlin Noise will repeat every 256 co-ordinates but its okay, as decimal values are
         # allowed
 
-        self.xf = self.inp_x - self.xi
-        self.yf = self.inp_y - self.yi
-        self.zf = self.inp_z - self.zi
+        self.xf = self.inp_x - int(self.inp_x)
+        self.yf = self.inp_y - int(self.inp_y)
+        self.zf = self.inp_z - int(self.inp_z)
+
+        # store the hashes 
+        self.hashes = {}
+        self.value = None
+
 
     # private:
-    def _lerp(lo: float, hi: float, t: float):
+    def _lerp(self, lo: float, hi: float, t: float):
         """
         Linearly interpolate between the lo and hi vals.
         0.0 <= t <= 1.0
         """
         # this guarantees res = hi when t == 1.
-        return (1 - t) * lo + t * hi
+        return lo + t * (hi - lo)
 
     def _grad(self, hash: int, x: float, y: float, z: float):
         """
@@ -93,7 +100,7 @@ class PerlinNoise:
 
         return (u + v)
 
-    def _inc(self, num: int):
+    def _inc(self, num: int) -> int:
         # make sure the num wrap around, to repeat the noise
         num+=1
         if self.rep_amt > 0:
@@ -101,21 +108,106 @@ class PerlinNoise:
 
         return num
 
-    def _hash(self) -> tuple:
+    def _hash(self) -> None:
         """
         Hashes the unit cell co-ords and return as tuple
         """
         # for a unit cube there are 8 possible hashes
         # returns the tuple of with all 8 hashes
-        aaa = P[P[P[self.xi] + self.yi] + self.zi]
-        aab = P[P[P[self.xi] + self.yi] + self._inc(self.zi)]
-        aba = P[P[P[self.xi] + self._inc(self.yi)] + self.zi]
-        abb = P[P[P[self.xi] + self._inc(self.yi)] + self._inc(self.zi)]
-        baa = P[P[P[self._inc(self.xi)] + self.yi] + self.zi]
-        bab = P[P[P[self._inc(self.xi)] + self.yi] + self._inc(self.zi)]
-        bba = P[P[P[self._inc(self.xi)] + self._inc(self.yi)] + self.zi]
-        bbb = P[P[P[self._inc(self.xi)] + self._inc(self.yi)] + self._inc(self.zi)]
+        random.shuffle(P)
 
-        return (aaa, aab, aba, abb, baa, bab, bba, bbb)
+        self.hashes["aaa"] = P[P[P[self.xi] + self.yi] + self.zi]
+        self.hashes["aab"] = P[P[P[self.xi] + self.yi] + self._inc(self.zi)]
+        self.hashes["aba"] = P[P[P[self.xi] + self._inc(self.yi)] + self.zi]
+        self.hashes["abb"] = P[P[P[self.xi] + self._inc(self.yi)] + self._inc(self.zi)]
+        self.hashes["baa"] = P[P[P[self._inc(self.xi)] + self.yi] + self.zi]
+        self.hashes["bab"] = P[P[P[self._inc(self.xi)] + self.yi] + self._inc(self.zi)]
+        self.hashes["bba"] = P[P[P[self._inc(self.xi)] + self._inc(self.yi)] + self.zi]
+        self.hashes["bbb"] = P[P[P[self._inc(self.xi)] + self._inc(self.yi)] + self._inc(self.zi)]
+
+    def _fadefunc(self, t):
+        """
+        Slope is 0 at the extreme points for 0.0 <= t <= 1.0
+        """
+        return (3 - 2 * t) * t * t
+
+    # All the things required to calculate the noise value has been declared and defined
+    # till here. Only thing remaining is to calculate the noise value now
+    # u, v and w are the "faded" values of the self.*f for smoothness while 
+    # linearly interpolating
+    def _calc(self):
+        """
+        Calculates the noise value at the input point
+        """
+        u = self._fadefunc(self.xf)
+        v = self._fadefunc(self.yf)
+        w = self._fadefunc(self.zf)
+
+        # populate the hashes dict
+        self._hash()
+        
+        # once the hash dict is populated, start calculating the dot product between 
+        # the gradient vector and the distance vectors, which is done in the _grad method.
+        # finally linearly interpolate the values to get the avg value
+        # first interpolate in the x-dir, then in y-dir
+        x1: float = self._lerp(self._grad(self.hashes["aaa"], self.xf, self.yf, self.zf),
+                self._grad(self.hashes["baa"], self.xf - 1, self.yf, self.zf), u)
+
+        x2: float = self._lerp(self._grad(self.hashes["aba"], self.xf, self.yf - 1, self.zf),
+                self._grad(self.hashes["bba"], self.xf - 1, self.yf - 1, self.zf), u)
+
+        # the first y-dir lerp
+        y1: float = self._lerp(x1, x2, v)
+
+        x1: float = self._lerp(self._grad(self.hashes["aab"], self.xf, self.yf, self.zf - 1),
+                self._grad(self.hashes["bab"], self.xf - 1, self.yf, self.zf - 1), u)
+
+        x2: float = self._lerp(self._grad(self.hashes["abb"], self.xf, self.yf - 1, self.zf - 1),
+                self._grad(self.hashes["bbb"], self.xf-1, self.yf-1, self.zf-1), u)
+
+        # the second y-dir lerp
+        y2: float = self._lerp(x1, x2, v)
+
+        # the final noise value, which will be in the range [0, 1]
+        self.value = (self._lerp(y1, y2, w) + 1)/2
+        return self.value
+
+    def val(self):
+        """
+        Return the noise value calculated
+        """
+        if not self.value:
+            self._calc()
+            return self.value
+
+        return self.value
 
 
+class OctavePerlin:
+    """
+    Calculate the noise value using octaves
+    """
+    def __init__(self, inp_x, inp_y=0, inp_z=0, octaves=16, persist=20):
+        self.x = inp_x
+        self.y = inp_y
+        self.z = inp_z
+
+        self.octaves = octaves
+        self.persist = persist
+
+    def _calc(self):
+        tot_sum: float = 0
+        max_amp: float = 0
+        amp: float = 1.0
+        freq: float = 1.0
+
+        for octave in range(self.octaves):
+            noise_obj = PerlinNoise(self.x*freq, self.y*freq, self.z*freq)
+            tot_sum += noise_obj.val() * amp
+
+            max_amp += amp
+
+            amp *= self.persist
+            freq *= 2.0
+
+        return tot_sum / max_amp

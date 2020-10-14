@@ -1,4 +1,9 @@
 #!/usr/bin/python3.9
 # -*- coding: utf-8 -*-
 import PerlinNoise
-x, y, z = (33.45, 42.0, -12.66)
+xoff = 0
+for i in range(500):
+    noise = PerlinNoise.OctavePerlin(xoff)
+    nval = noise._calc()
+    xoff += 0.1
+    print(nval)
