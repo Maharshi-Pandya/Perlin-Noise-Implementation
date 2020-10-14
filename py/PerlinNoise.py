@@ -1,4 +1,9 @@
-# The file to implement the PerlinNoise functionality
+#     ____           _ _         _   _       _             ____            
+#    |  _ \ ___ _ __| (_)_ __   | \ | | ___ (_)___  ___   / ___| ___ _ __  
+#    | |_) / _ \ '__| | | '_ \  |  \| |/ _ \| / __|/ _ \ | |  _ / _ \ '_ \ 
+#    |  __/  __/ |  | | | | | | | |\  | (_) | \__ \  __/ | |_| |  __/ | | |
+#    |_|   \___|_|  |_|_|_| |_| |_| \_|\___/|_|___/\___|  \____|\___|_| |_|
+
 
 # The permutation table for the unique hash making of each of the integral unit cell co-ords.
 # PERM_TABLE has all the numbers 0-255 (0 and 255 inclusive) included in it which will be useful
@@ -7,7 +12,6 @@
 # but it must contain 0-255 inclusive random numbers which are uniformly distributed throughout the 
 # table. Rn, will be hard-coding it.
 # This permutation table is the one which Ken Perlin used.
-import random
 
 PERM_TABLE: list[int] = [151,160,137,91,90,15,
     131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
@@ -28,6 +32,7 @@ P: list[int] = []
 for idx in range(512):
     P.append(PERM_TABLE[idx%255])
 
+# ========================== BEGIN ========================== #
 class PerlinNoise:
     """
     The class for generation of Perlin Noise
@@ -60,14 +65,12 @@ class PerlinNoise:
         self.hashes = {}
         self.value = None
 
-
     # private:
     def _lerp(self, lo: float, hi: float, t: float):
         """
         Linearly interpolate between the lo and hi vals.
         0.0 <= t <= 1.0
         """
-        # this guarantees res = hi when t == 1.
         return lo + t * (hi - lo)
 
     def _grad(self, hash: int, x: float, y: float, z: float):
@@ -86,17 +89,17 @@ class PerlinNoise:
         # - use the last two bits to decide if u and v are positive or negative
 
         h = hash & 0xF
-        u = x if h < 8 else y
+        u = x if (h<0x8) else y
         
-        if h < 4: # ? 4 = "0b0100"
-            v = x
-        elif h == 12 or h == 14: # ? 12 = "0b1100" and 14 = "0b1110"
+        if h<0x4: # ? 4 = "0b0100"
             v = y
+        elif h==0xC or h==0xE:     # ? 12 = "0b1100" and 14 = "0b1110"
+            v = x
         else:
             v = z
 
-        u = u if h&1 == 0 else -u
-        v = v if h&2 == 0 else -v
+        u = u if (h&1) == 0 else -u
+        v = v if (h&2) == 0 else -v
 
         return (u + v)
 
@@ -114,7 +117,6 @@ class PerlinNoise:
         """
         # for a unit cube there are 8 possible hashes
         # returns the tuple of with all 8 hashes
-        random.shuffle(P)
 
         self.hashes["aaa"] = P[P[P[self.xi] + self.yi] + self.zi]
         self.hashes["aab"] = P[P[P[self.xi] + self.yi] + self._inc(self.zi)]
@@ -129,7 +131,7 @@ class PerlinNoise:
         """
         Slope is 0 at the extreme points for 0.0 <= t <= 1.0
         """
-        return (3 - 2 * t) * t * t
+        return t * t * t * (t * (t * 6 - 15) + 10)
 
     # All the things required to calculate the noise value has been declared and defined
     # till here. Only thing remaining is to calculate the noise value now
@@ -183,31 +185,57 @@ class PerlinNoise:
         return self.value
 
 
+# ? From the above noise generator, get the detailed noise by changing the frequency and 
+# ? amplitude of the input point's noise value by some amount and adding it to the contribution
 class OctavePerlin:
     """
-    Calculate the noise value using octaves
+    Calculate the noise value using octaves which implicitly uses PerlinNoise
     """
-    def __init__(self, inp_x, inp_y=0, inp_z=0, octaves=16, persist=20):
-        self.x = inp_x
-        self.y = inp_y
-        self.z = inp_z
+    def __init__(self, inp_x, inp_y=0, inp_z=0, octaves=16, persist=0.5):
+        self.inp_x = inp_x
+        self.inp_y = inp_y
+        self.inp_z = inp_z
 
+        # persistance represent which amplitudes contribute in the details
+        # of the noise value
         self.octaves = octaves
         self.persist = persist
 
+        # final noise value
+        self.value = None
+
     def _calc(self):
-        tot_sum: float = 0
-        max_amp: float = 0
-        amp: float = 1.0
-        freq: float = 1.0
+        """
+        Calculate using the PerlinNoise instance
+        """
+        tot_sum: float = 0   # ? total sum of the noise values
+        max_amp: float = 0   # ? keep the sum in [0,1]
+        amp: float = 1.0     # ? amplitude of each noise value
+        freq: float = 1.0    # ? frequency for getting the detailed noise
 
+        # for each octave we twice the frequency and multiply the amplitude 
+        # by persistance to get the detailed noise value
+        # to keep the final sum value in the range [0, 1] we keep track of the 
+        # max amplitude (sum of all the amplitudes)
         for octave in range(self.octaves):
-            noise_obj = PerlinNoise(self.x*freq, self.y*freq, self.z*freq)
+            noise_obj = PerlinNoise(self.inp_x*freq, self.inp_y*freq, self.inp_z*freq)
+            # ? multiply the noise value by the amplitude
             tot_sum += noise_obj.val() * amp
-
             max_amp += amp
 
             amp *= self.persist
             freq *= 2.0
 
-        return tot_sum / max_amp
+        self.value = tot_sum / max_amp
+
+    def val(self):
+        """
+        Return the final detailed noise value
+        """
+        if not self.value:
+            self._calc()
+            return self.value
+
+        return self.value
+
+
