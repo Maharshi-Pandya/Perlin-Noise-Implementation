@@ -1,7 +1,7 @@
 #ifndef _PERLIN_NOISE_HEADER_
 #define _PERLIN_NOISE_HEADER_
 
-#define pn_noise noise
+#define pn_noise _noise
 
 // standard includes
 #include <math.h>
@@ -43,7 +43,7 @@ int* _hash(int xi, int yi, int zi)
 // if repeat is on, make sure the input co-ordinate
 // map to their "local" co-ordinates i.e. make sure the co-ordinates
 // wrap-around
-float noise(float inp_x, float inp_y, float inp_z, int rep_amt=-1)
+float _noise(float inp_x, float inp_y, float inp_z, int rep_amt=-1)
 {
   float x = inp_x;
   float y = inp_y;
