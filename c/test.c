@@ -11,8 +11,11 @@ int main(int argc, char const *argv[])
   pn_init();
 
   // call the noise function
-  float x = pn_noise(.5, .5, .5); 
-  float y = pn_noise(.4, .4, .4);
+  for(int i=0; i<10000; i++)
+  {
+    float nval = pn_noise(i * 0.1f, 0, 0);
+    printf("%f\n", nval);
+  }
   return 0;
 }
 
