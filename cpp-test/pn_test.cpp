@@ -1,6 +1,14 @@
+/*
+ ____           _ _         _   _       _            __  __             
+|  _ \ ___ _ __| (_)_ __   | \ | | ___ (_)___  ___  |  \/  | __ _ _ __  
+| |_) / _ \ '__| | | '_ \  |  \| |/ _ \| / __|/ _ \ | |\/| |/ _` | '_ \ 
+|  __/  __/ |  | | | | | | | |\  | (_) | \__ \  __/ | |  | | (_| | |_) |
+|_|   \___|_|  |_|_|_| |_| |_| \_|\___/|_|___/\___| |_|  |_|\__,_| .__/ 
+                                                                 |_|  
+*/
+
 #include <iostream>
 #include <SFML/Graphics.hpp>
-
 // for perlin noise generation
 #include "pn_header/PerlinNoise.h"
 
@@ -65,7 +73,6 @@ int main(int argc, char const *argv[])
         window.close();
       }
     }
-
     if(framesDone % 10 == 0)
     {
       // update the pixel values each cycle
@@ -105,6 +112,5 @@ int main(int argc, char const *argv[])
     window.display();
     framesDone++;
   }
-
   return 0;
 }
