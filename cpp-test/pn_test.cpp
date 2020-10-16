@@ -15,10 +15,14 @@
 int main(int argc, char const *argv[])
 {
   // init window
-  sf::RenderWindow window(sf::VideoMode(800, 800), "Perlin Noise Test");
+  sf::RenderWindow window(sf::VideoMode(640, 360), "Perlin Noise Test");
+  // limit the framerate; gives a decent performance of 37 fps
+  window.setFramerateLimit(60);
+
   // texture and sprite for pixels
   int tWidth, tHeight;
   tWidth = window.getSize().x;
+  // window.setVerticalSyncEnabled(true);
   tHeight = window.getSize().y;
 
   // framerate calc
@@ -73,7 +77,9 @@ int main(int argc, char const *argv[])
         window.close();
       }
     }
-    if(framesDone % 10 == 0)
+    // avoid overkilling and every 3 frames, calc new noise values
+    // for good performance
+    if(framesDone % 3 == 0)
     {
       // update the pixel values each cycle
       // each pixel has rgba i.e. 4 channels
