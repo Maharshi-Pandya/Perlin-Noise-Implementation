@@ -5,6 +5,7 @@
 #define pn_init _init_perm_table
 
 // standard includes
+#include <stdio.h>
 #include <math.h>
 
 // // uncomment if you want the repeatition to be on
@@ -23,8 +24,10 @@ void _init_perm_table(void)
 {
   int tmp_num = -1;
   FILE *perm_file = fopen("PERMTABLE.txt", "r");
+  // error opening the file
   if(perm_file == NULL)
   {
+    printf("::-> Error file cannot be opened. Make sure it exists!\n");
     exit(1);
   }
 
@@ -68,7 +71,7 @@ float _grad(int hash, float x_comp, float y_comp, float z_comp)
   float t = h < 4 /* 0b100 */ ? y_comp : (h == 12 || h == 14 ? x_comp : z_comp);
 
   // from the first two bits decide if w or t are positive or negative
-  return ((h&1 == 0 ? w : -w) + (h&2 == 0? t: -t));
+  return ((h&1) == 0 ? w : -w) + ((h&2) == 0? t: -t);
 }
 
 // ✨ fade function which has slope of zero as it reaches the extremes
