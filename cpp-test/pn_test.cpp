@@ -22,7 +22,6 @@ int main(int argc, char const *argv[])
   // texture and sprite for pixels
   int tWidth, tHeight;
   tWidth = window.getSize().x;
-  // window.setVerticalSyncEnabled(true);
   tHeight = window.getSize().y;
 
   // framerate calc
@@ -107,8 +106,9 @@ int main(int argc, char const *argv[])
       }
       // travel through noise space (3rd dimension) in time
       noiseTime+=timeInc;
-      // update the texture
+      // update the texture and free the pixels
       noiseTexture.update(pixels);
+      delete[] pixels;
     }
     fText.setString(std::to_string(fRate));
 
