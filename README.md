@@ -18,13 +18,13 @@ Here's the result:
 
 #### C++
 
-![NoiseMap using C++ and SFML](./assets/NoiseMap.png)
+<img src="./assets/NoiseMap.png" alt="NoiseMap using C++ and SFML" style="zoom:50%;" />
 
 <hr>
 
 #### Python 
 
-![NoiseMapPython](/mnt/sda1/Codes/Python/PerlinNoiseGen/assets/PerlinMap.png)
+![NoiseMapPython](./assets/PerlinMap.png)
 
 >The Python visualisation is in the terminal itself.
 >
