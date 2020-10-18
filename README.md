@@ -16,9 +16,23 @@ The `cpp-test/` directory contains the code to test the Perlin Noise algorithm. 
 
 Here's the result:
 
+#### C++
+
 ![NoiseMap using C++ and SFML](./assets/NoiseMap.png)
 
-It is evident from the above generated "Noise Map" that Perlin Noise generates "smooth" random values.
+<hr>
+
+#### Python 
+
+![NoiseMapPython](/mnt/sda1/Codes/Python/PerlinNoiseGen/assets/PerlinMap.png)
+
+>The Python visualisation is in the terminal itself.
+>
+>It dynamically renders the characters based on the noise value at that point in the terminal.
+>
+>Now thats good!
+
+It is evident from the above generated "Noise Maps" that Perlin Noise generates "smooth" random values.
 
 To run the above cpp-test, make sure that `SFML` is installed locally on your machine
 

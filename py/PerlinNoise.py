@@ -180,7 +180,6 @@ class PerlinNoise:
         """
         if not self.value:
             self._calc()
-            return self.value
 
         return self.value
 
@@ -191,7 +190,7 @@ class OctavePerlin:
     """
     Calculate the noise value using octaves which implicitly uses PerlinNoise
     """
-    def __init__(self, inp_x, inp_y=0, inp_z=0, octaves=16, persist=0.5):
+    def __init__(self, inp_x, inp_y=0, inp_z=0, octaves=8, persist=0.5):
         self.inp_x = inp_x
         self.inp_y = inp_y
         self.inp_z = inp_z
@@ -224,8 +223,9 @@ class OctavePerlin:
             max_amp += amp
 
             amp *= self.persist
-            freq *= 2.0
+            freq *= 2.0     # double the freq each iteration
 
+        # value is in the range [0,1]
         self.value = tot_sum / max_amp
 
     def val(self):
@@ -234,7 +234,6 @@ class OctavePerlin:
         """
         if not self.value:
             self._calc()
-            return self.value
 
         return self.value
 
