@@ -23,7 +23,7 @@ int perm_flag = 0;
 void _init_perm_table(void)
 {
   int tmp_num = -1;
-  FILE *perm_file = fopen("PERMTABLE.txt", "r");
+  FILE *perm_file = fopen("../pn_header/PERMTABLE.txt", "r");
   // error opening the file
   if(perm_file == NULL)
   {
