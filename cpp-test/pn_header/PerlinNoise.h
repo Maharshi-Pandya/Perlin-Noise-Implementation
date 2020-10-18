@@ -3,6 +3,7 @@
 
 #define pn_noise _noise
 #define pn_init _init_perm_table
+#define pn_octave_noise _octave_noise
 
 // standard includes
 #include <stdio.h>
@@ -27,10 +28,9 @@ void _init_perm_table(void)
   // error opening the file
   if(perm_file == NULL)
   {
-    printf("::-> Error file cannot be opened. Make sure it exists!\n");
+    printf("::-> Error: Permutation file cannot be opened. Make sure it exists!\n");
     exit(1);
   }
-
   // read the ints
   int idx = 0;
   while(!feof(perm_file))
@@ -39,13 +39,11 @@ void _init_perm_table(void)
     PERM_TABLE[idx] = tmp_num;
     idx++;
   }
-
   // double the permutation to avoid overflow
   for(int idx=0; idx<256; idx++)
   {
     P[256+idx] = P[idx] = PERM_TABLE[idx];
   }
-
   fclose(perm_file);
   // permtable created 
   perm_flag = 1;
@@ -190,6 +188,36 @@ float _noise(float inp_x, float inp_y, float inp_z)
   
   // lerp the two y values
   return (_lerp(y1, y2, w) + 1) / 2;
+}
+
+// Generate more "noisy" noise using octaves
+// this is done by adding contributions of the noise function
+// iteratively and changing the amplitude and frequency of inputs
+float _octave_noise(float inp_x, float inp_y, float inp_z)
+{
+  // The octave count and the persistance of each octave
+  int octaveCount = 8;
+  float mulFreq = 2.f;
+  float persistance = .5f;
+  // "summed" noise, frequency and the max amplitude
+  float noiseSum = 0.f;
+  float currFreq = 1.f;
+  float maxAmp = 0.f;
+  float currAmp = 1.0f;
+
+  // iterate through the octaves
+  for(int i=0; i<octaveCount; i++)
+  {
+    float currNoise = _noise(inp_x*currFreq, inp_y*currFreq, inp_z*currFreq) * currAmp;
+    noiseSum += currNoise;
+    // resultant value will be in range [0, 1]
+    maxAmp += currAmp;
+    // increase the freq and decrease the amplitude
+    currFreq *= mulFreq;
+    currAmp *= persistance;
+  }
+  // map value in range [0, 1]
+  return (noiseSum / maxAmp);
 }
 
 
