@@ -37,7 +37,7 @@ Here's the result:
 
 It is evident from the above generated "Noise Maps" that Perlin Noise generates "smooth" random values.
 
-To run the above cpp-test, make sure that `SFML` is installed locally on your machine
+- To run the above cpp-test, make sure that `SFML` is installed locally on your machine
 
 ```shell
 $ cd cpp-test
@@ -50,6 +50,16 @@ With this, the `PerlinNoise` binary will be generated in `bin/`
 $ cd bin/
 $ ./PerlinNoise
 ```
+
+- To run the Terminal visualisation in C++
+
+```shell
+$ cd cpp-test/
+$ g++ pn_test_terminal.cpp -o PerlinTerm
+$ ./PerlinTerm
+```
+
+
 
 #### Various Sources
 
