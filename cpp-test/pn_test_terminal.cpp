@@ -13,6 +13,7 @@
 
 // standard include
 #include <stdio.h>
+#include <csignal>  // signal handling
 #include "pn_header/PerlinNoise.h"
 
 // world width and height (to be initialised in SetConsoleSize)
@@ -70,12 +71,25 @@ void DrawPerlinConsole(void)
   printf("\033[%dA", w_height);
 }
 
+// when Ctrl-C is pressed
+void ctrlCSignalHandler(int signum)
+{
+  // go down w_height lines
+  printf("\033[%dB", w_height);
+  printf("\nAight! Imma head out...\n\n");
+  
+  // close it
+  exit(signum);
+}
 int main(int argc, char const *argv[])
 {
-  // init
+  // register the signal handler
+  signal(SIGINT, ctrlCSignalHandler);
+  
+  // init and activate the noise space
   SetConsoleSize();
-  // activate the noise space
   pn_init();
+
   // loop and render
   while(1){
     DrawPerlinConsole();
