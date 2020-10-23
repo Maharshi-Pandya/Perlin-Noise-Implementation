@@ -85,3 +85,21 @@ avg = lerp(x1, x2, v)
 ```
 
 Logically, thats all we want.
+
+### Generation using Octaves
+
+<hr>
+
+Simple Perlin Noise provides a certain degree of natural behaviour, but it still looks very smooth and unrealistic. For eg, real world terrains or mountains have detailed features like hills, boulders, rocks etc..
+
+But Perlin Noise does not provide these details. A simple solution is: We take multiple `noise` functions having different frequencies and different amplitudes, and add them together.
+
+`Frequency` represents the period at which the sample points occur in the noise space and `Amplitude` represents the range at which the noise value can be.
+
+![Octaves](/mnt/sda1/Codes/Python/PerlinNoiseGen/assets/octave01.png)
+
+The above figure show the sum of various noise values.
+
+These are called different <i>octaves</i> of noise. Each successive octave contributes less and less to the final noise value. Also, the code execution time increases with increase in number of octaves. So its better to have few octaves for some amount of detail to the <i>noise</i>.
+
+And now, we are finally done.
