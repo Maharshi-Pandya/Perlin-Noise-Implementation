@@ -96,7 +96,7 @@ But Perlin Noise does not provide these details. A simple solution is: We take m
 
 `Frequency` represents the period at which the sample points occur in the noise space and `Amplitude` represents the range at which the noise value can be.
 
-![Octaves](/mnt/sda1/Codes/Python/PerlinNoiseGen/assets/octave01.png)
+![Octaves](./assets/octave01.png)
 
 The above figure show the sum of various noise values.
 
