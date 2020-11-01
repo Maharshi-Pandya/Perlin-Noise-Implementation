@@ -1,6 +1,7 @@
 // The test file for PerlinNoise 
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>   // ctrl-c handling
 #include "PerlinNoise.h"
 
 // hard-coding rn
@@ -31,10 +32,17 @@ void perlinDrawConsole(void)
   // go back height lines
   printf("\033[24A");
 }
+void ctrlcHandler(int signum)
+{
+  // go down w_rows lines
+  printf("\033[%dB", w_rows);
+  printf("\nAight. Imma head out...\n\n");
+  exit(signum);
+}
 
 int main(int argc, char const *argv[])
 {
-  /* code */
+  signal(SIGINT, ctrlcHandler);
 
   // activate the noise space!
   pn_init();
