@@ -96,7 +96,7 @@ int main(int argc, char const *argv[])
         {
           int idx = (x + y*tWidth) * 4;
           // use octaves to generate noise valued color
-          int col = (int)(pn_octave_noise(xoff, yoff, noiseTime) * 255);
+          int col = (int)(pn_noise(xoff, yoff, noiseTime) * 255);
           pixels[idx] = col;    // red
           pixels[idx+1] = col;  // green
           pixels[idx+2] = col;  // blue

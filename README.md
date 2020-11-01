@@ -33,7 +33,7 @@ Here's the result:
 
 #### C++
 
-<img src="./assets/NoiseMap.png" alt="NoiseMap using C++ and SFML" style="zoom:50%;" />
+![SFML Cpp Perlin HeightMap](./assets/SFMLCppPERLIN.png)
 
 It is evident from the above generated "Noise Maps" that Perlin Noise generates "smooth" random values.
 
