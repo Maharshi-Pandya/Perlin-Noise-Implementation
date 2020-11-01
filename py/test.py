@@ -9,6 +9,8 @@ w_width = os.get_terminal_size().lines - 2
 w_height = os.get_terminal_size().columns
 # travel through the noise space in time
 zoff: float = 0.0
+
+
 def perlinDraw():
     global zoff
     # the xoff and yoff
@@ -20,23 +22,25 @@ def perlinDraw():
         xoff += inc
         yoff = 0.0  # for every xoff, yoff will start at 0
         for y in range(w_height):
-            noise = PerlinNoise.PerlinNoise(xoff, yoff, zoff) 
+            noise = PerlinNoise.PerlinNoise(xoff, yoff, zoff)
             dr_char = "#" if noise.val() < 0.5 else "."
             print(dr_char, end="")
             yoff += inc
         print()
     # increment the zoff by timestep
-    zoff += 0.1
+    zoff += 0.08
     # bring the cursor back at top for dynamic updating
     sys.stdout.write(f"\033[{w_width}A")
 
-# loop (Ctrl-C to exit) 
-while(1):
+
+# loop (Ctrl-C to exit)
+while 1:
     try:
         perlinDraw()
     except KeyboardInterrupt:
         print()
         # bring the cursor at bottom to stop updating
         sys.stdout.write(f"\033[{w_width}B")
+        sys.stdout.write("\nAight. Imma head out...\n\n")
         sys.exit(1)
 
