@@ -45,6 +45,8 @@ void SetConsoleSize(void)
 float zoff = 0.f;
 void DrawPerlinConsole(void)
 {
+  // char to draw
+  char charval = '.';
   // travel through the noise space in time
   float xoff, yoff = 0.f;
   float time_step = .001f;
@@ -60,7 +62,8 @@ void DrawPerlinConsole(void)
       // calc noise value for xy, at time = zoff
       float noise_value = pn_noise(xoff, yoff, zoff);
       // based on the noise value, print the char
-      noise_value < 0.5 ? printf(".") : printf("#");
+      charval = noise_value < 0.5 ? '.' : '*';
+      printf("%c", charval);
       xoff += incr;   // move along the noise space
     }
     printf("\n");
