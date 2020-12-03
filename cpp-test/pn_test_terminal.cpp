@@ -13,6 +13,8 @@
 
 // standard include
 #include <stdio.h>
+#include <cstdlib>
+#include <ctime>
 #include <csignal>  // signal handling
 #include "pn_header/PerlinNoise.h"
 
@@ -41,6 +43,16 @@ void SetConsoleSize(void)
     w_height = window.ws_row - 2;
   #endif
 }
+
+// random float between 0 and 1
+float RandomFloat0and1(void)
+{
+  float lim = 1.0;
+  float randval = ( ((float)rand() / (float)RAND_MAX) * lim );
+  return randval;
+} 
+
+
 // we now have the width and height; can visualize noise
 float zoff = 0.f;
 void DrawPerlinConsole(void)
@@ -61,6 +73,10 @@ void DrawPerlinConsole(void)
     {
       // calc noise value for xy, at time = zoff
       float noise_value = pn_noise(xoff, yoff, zoff);
+      
+      // // uncommment to generate random noise
+      // float noise_value = RandomFloat0and1();
+
       // based on the noise value, print the char
       charval = noise_value < 0.5 ? '.' : '*';
       printf("%c", charval);
@@ -92,6 +108,9 @@ int main(int argc, char const *argv[])
   // init and activate the noise space
   SetConsoleSize();
   pn_init();
+
+  // // uncomment to generate random noise
+  // srand((uint)time(NULL));
 
   // loop and render
   while(1){
