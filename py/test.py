@@ -24,7 +24,7 @@ def perlinDraw():
         for y in range(w_height):
             noise = PerlinNoise.PerlinNoise(xoff, yoff, zoff)
             dr_char = "#" if noise.val() < 0.5 else "."
-            print(dr_char, end="")
+            sys.stdout.write(dr_char)
             yoff += inc
         print()
     # increment the zoff by timestep

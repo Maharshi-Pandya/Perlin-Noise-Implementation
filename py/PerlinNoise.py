@@ -236,5 +236,3 @@ class OctavePerlin:
             self._calc()
 
         return self.value
-
-

@@ -29,7 +29,7 @@ void SetConsoleSize(void)
     // used to get the screen info
     // implementation may vary. Feel free to edit, if this doesnot work
     CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo(GetStdHandle(STDOUT_HANDLE), &csbi);
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
     // set the world width and height
     w_width = (int)csbi.dwSize.X - 2;
     w_height = (int)csbi.dwSize.Y - 2;
@@ -110,7 +110,7 @@ int main(int argc, char const *argv[])
   pn_init();
 
   // // uncomment to generate random noise
-  // srand((uint)time(NULL));
+  // srand((unsigned int)time(NULL));
 
   // loop and render
   while(1){
