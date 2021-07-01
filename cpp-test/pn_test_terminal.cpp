@@ -115,6 +115,13 @@ int main(int argc, char const *argv[])
   // loop and render
   while(1){
     DrawPerlinConsole();
+    
+    // explicit sleep function to limit cpu usage
+    #if defined(__WIN32)
+      sleep(0.001);
+    #elif defined(__linux__)
+      usleep(1000);
+    #endif
   }
   return 0;
 }
